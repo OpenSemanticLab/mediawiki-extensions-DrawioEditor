@@ -209,12 +209,14 @@ DrawioEditor.prototype.uploadToWiki = function(blob) {
 			console.log('upload to wiki failed');
 			console.log(data);
 			} else {
+				mw.hook( 'drawioeditor.file.uploaded' ).fire({exists: false, name: that.filename});
 				that.updateImage(data.upload.imageinfo);
 				that.hideSpinner();
 			}
 		})
 		.fail( function(retStatus, data) {
 			if( retStatus == "exists" ){
+				mw.hook( 'drawioeditor.file.uploaded' ).fire({exists: true, name: that.filename});
 				that.updateImage(data.upload.imageinfo);
 				that.hideSpinner();
 			} else {
@@ -246,7 +248,7 @@ DrawioEditor.prototype.save = function(datauri) {
 	// convert base64 to uint8 array
 	datastr = atob(parts[4]);
 	var expr = /"http:\/\/[^"]*?1999[^"]*?"/gmi;
-	datastr = datastr.replace( expr, '"http://www.w3.org/2000/svg"' );
+	//datastr = datastr.replace( expr, '"http://www.w3.org/2000/svg"' ); 
 	data = new Uint8Array(datastr.length)
 	for (i = 0; i < datastr.length; i++) {
 		data[i] = datastr.charCodeAt(i);
