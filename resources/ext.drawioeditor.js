@@ -1,5 +1,5 @@
 
-function DrawioEditor(id, filename, type, interactive, updateHeight, updateWidth, updateMaxWidth, baseUrl) {
+function DrawioEditor(id, filename, type, interactive, updateHeight, updateWidth, updateMaxWidth, baseUrl, label) {
 	var that = this;
 
 	this.id = id;
@@ -10,6 +10,7 @@ function DrawioEditor(id, filename, type, interactive, updateHeight, updateWidth
 	this.updateWidth = updateWidth;
 	this.updateMaxWidth = updateMaxWidth;
 	this.baseUrl = baseUrl;
+	this.label = label;
 
 	//Could be 'en', 'fr', 'de-formal', 'zh-hant', ...
 	var currentUserLanguage = mw.user.options.get( 'language', 'en' ).split( '-' );
@@ -209,14 +210,14 @@ DrawioEditor.prototype.uploadToWiki = function(blob) {
 			console.log('upload to wiki failed');
 			console.log(data);
 			} else {
-				mw.hook( 'drawioeditor.file.uploaded' ).fire({exists: false, name: that.filename});
+				mw.hook( 'drawioeditor.file.uploaded' ).fire({exists: false, name: that.filename, label: that.label});
 				that.updateImage(data.upload.imageinfo);
 				that.hideSpinner();
 			}
 		})
 		.fail( function(retStatus, data) {
 			if( retStatus == "exists" ){
-				mw.hook( 'drawioeditor.file.uploaded' ).fire({exists: true, name: that.filename});
+				mw.hook( 'drawioeditor.file.uploaded' ).fire({exists: true, name: that.filename, label: that.label});
 				that.updateImage(data.upload.imageinfo);
 				that.hideSpinner();
 			} else {
@@ -248,7 +249,7 @@ DrawioEditor.prototype.save = function(datauri) {
 	// convert base64 to uint8 array
 	datastr = atob(parts[4]);
 	var expr = /"http:\/\/[^"]*?1999[^"]*?"/gmi;
-	//datastr = datastr.replace( expr, '"http://www.w3.org/2000/svg"' );  
+	//datastr = datastr.replace( expr, '"http://www.w3.org/2000/svg"' );   
 	data = new Uint8Array(datastr.length)
 	for (i = 0; i < datastr.length; i++) {
 		data[i] = datastr.charCodeAt(i);
@@ -296,10 +297,10 @@ DrawioEditor.prototype.initCallback = function () {
 
 var editor;
 
-window.editDrawio = function(id, filename, type, interactive, updateHeight, updateWidth, updateMaxWidth, baseUrl) {
+window.editDrawio = function(id, filename, type, interactive, updateHeight, updateWidth, updateMaxWidth, baseUrl, label) {
 	if (!editor) {
 		window.drawioEditorBaseUrl = baseUrl;
-		editor = new DrawioEditor(id, filename, type, interactive, updateHeight, updateWidth, updateMaxWidth, baseUrl);
+		editor = new DrawioEditor(id, filename, type, interactive, updateHeight, updateWidth, updateMaxWidth, baseUrl, label);
 	} else {
 		alert("Only one DrawioEditor can be open at the same time!");
 	}

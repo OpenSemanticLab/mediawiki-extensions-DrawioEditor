@@ -94,6 +94,7 @@ class DrawioEditor {
 		$opt_height = array_key_exists( 'height', $opts ) ? $opts[ 'height' ] : 'auto';
 		$opt_width = array_key_exists( 'width', $opts ) ? $opts[ 'width' ] : '100%';
 		$opt_max_width = array_key_exists( 'max-width', $opts ) ? $opts[ 'max-width' ] : false;
+		$opt_label = array_key_exists( 'label', $opts ) ? $opts[ 'label' ] : 'Diagram';
 
 		/* process input */
 		if ( $name == null || !strlen( $name ) ) {
@@ -126,6 +127,7 @@ class DrawioEditor {
 
 		$name = wfStripIllegalFilenameChars( $name );
 		$dispname = htmlspecialchars( $name, ENT_QUOTES );
+		if ($opt_label) $dispname = htmlspecialchars( $opt_label, ENT_QUOTES );
 
 		/* random id to reference html elements */
 		$id = mt_rand();
@@ -164,7 +166,7 @@ class DrawioEditor {
 		}
 
 		/* prepare edit href */
-		$edit_ahref = sprintf( "<a href='javascript:editDrawio(\"%s\", %s, \"%s\", %s, %s, %s, %s, \"%s\")'>",
+		$edit_ahref = sprintf( "<a href='javascript:editDrawio(\"%s\", %s, \"%s\", %s, %s, %s, %s, \"%s\", \"%s\")'>",
 			$id,
 			json_encode( $img_name, JSON_HEX_QUOT | JSON_HEX_APOS ),
 			$opt_type,
@@ -172,7 +174,8 @@ class DrawioEditor {
 			$opt_height === 'chart' ? 'true' : 'false',
 			$opt_width === 'chart' ? 'true' : 'false',
 			$opt_max_width === 'chart' ? 'true' : 'false',
-			$base_url
+			$base_url,
+			$opt_label
 		);
 
 		/* output begin */
