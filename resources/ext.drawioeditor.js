@@ -193,7 +193,6 @@ DrawioEditor.prototype.loadImage = function() {
 
 DrawioEditor.prototype.uploadToWiki = function(blob) {
 	var that = this;
-
 	var api = new mw.Api();
 	api.upload(blob, { filename: this.filename, ignorewarnings: true, format: 'json' } )
 		.done( function(data) {
@@ -216,14 +215,20 @@ DrawioEditor.prototype.uploadToWiki = function(blob) {
 			}
 		})
 		.fail( function(retStatus, data) {
-			if( retStatus == "exists" ){
-				mw.hook( 'drawioeditor.file.uploaded' ).fire({exists: true, name: that.filename, label: that.label});
-				that.updateImage(data.upload.imageinfo);
-				that.hideSpinner();
-			} else {
+			if (data.error) {
 				that.showDialog('Save failed',
 					'Upload to wiki failed!' +
 				'<br>Error: ' + data.error.info +
+				'<br>Check javascript console for details.');
+			}
+			else if (data.upload.warnings) {
+				mw.hook( 'drawioeditor.file.uploaded' ).fire({exists: data.upload.warnings.exists ? true : false, name: that.filename, label: that.label});
+				that.updateImage(data.upload.imageinfo);
+				that.hideSpinner();
+			}
+			else {
+				that.showDialog('Save failed',
+				'Upload to wiki failed!' +
 				'<br>Check javascript console for details.');
 			}
 		});
@@ -249,7 +254,7 @@ DrawioEditor.prototype.save = function(datauri) {
 	// convert base64 to uint8 array
 	datastr = atob(parts[4]);
 	var expr = /"http:\/\/[^"]*?1999[^"]*?"/gmi;
-	//datastr = datastr.replace( expr, '"http://www.w3.org/2000/svg"' );   
+	////datastr = datastr.replace( expr, '"http://www.w3.org/2000/svg"' );    
 	data = new Uint8Array(datastr.length)
 	for (i = 0; i < datastr.length; i++) {
 		data[i] = datastr.charCodeAt(i);
