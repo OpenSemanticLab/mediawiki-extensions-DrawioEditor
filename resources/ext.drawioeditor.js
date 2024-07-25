@@ -52,8 +52,12 @@ function DrawioEditor(id, filename, type, interactive, updateHeight, updateWidth
 	this.iframeOverlay.hide();
 
 	var localAttr = this.baseUrl !== 'https://embed.diagrams.net' ? "&local=0" : "";
+	var uiAttr = (
+		document.querySelector("html.Nskin-citizen-dark")
+		|| document.querySelector("html[data-bs-theme='Ndark']"))
+		? "&ui=dark" : "";
 	this.iframe = $('<iframe>', {
-		src: this.baseUrl + '/?embed=1&proto=json&spin=1&analytics=0&libraries=1&plugins=1&offline=0&picker=0&lang=' + this.language + localAttr,
+		src: this.baseUrl + '/?embed=1&proto=json&spin=1&analytics=0&libraries=1&plugins=1&offline=0&picker=0' + uiAttr + '&lang=' + this.language + localAttr,
 	id: 'drawio-iframe-' + id,
 	class: 'DrawioEditorIframe'
 	})
@@ -254,7 +258,7 @@ DrawioEditor.prototype.save = function(datauri) {
 	// convert base64 to uint8 array
 	datastr = atob(parts[4]);
 	var expr = /"http:\/\/[^"]*?1999[^"]*?"/gmi;
-	////datastr = datastr.replace( expr, '"http://www.w3.org/2000/svg"' );    
+	////datastr = datastr.replace( expr, '"http://www.w3.org/2000/svg"' );
 	data = new Uint8Array(datastr.length)
 	for (i = 0; i < datastr.length; i++) {
 		data[i] = datastr.charCodeAt(i);
