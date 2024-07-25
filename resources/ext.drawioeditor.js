@@ -57,7 +57,7 @@ function DrawioEditor(id, filename, type, interactive, updateHeight, updateWidth
 		|| document.querySelector("html[data-bs-theme='Ndark']"))
 		? "&ui=dark" : "";
 	this.iframe = $('<iframe>', {
-		src: this.baseUrl + '/?embed=1&proto=json&spin=1&analytics=0&libraries=1&plugins=1&offline=0&picker=0' + uiAttr + '&lang=' + this.language + localAttr,
+		src: this.baseUrl + '/?embed=1&proto=json&spin=1&analytics=0&libraries=1&plugins=1&offline=1&picker=0' + uiAttr + '&lang=' + this.language + localAttr,
 	id: 'drawio-iframe-' + id,
 	class: 'DrawioEditorIframe'
 	})
