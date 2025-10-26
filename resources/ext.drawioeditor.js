@@ -51,13 +51,12 @@ function DrawioEditor(id, filename, type, interactive, updateHeight, updateWidth
 	this.iframeOverlay = $("#drawio-iframe-overlay-" + id);
 	this.iframeOverlay.hide();
 
-	var localAttr = this.baseUrl !== 'https://embed.diagrams.net' ? "&local=0" : "";
 	var uiAttr = (
 		document.querySelector("html.Nskin-citizen-dark")
 		|| document.querySelector("html[data-bs-theme='Ndark']"))
 		? "&ui=dark" : "";
 	this.iframe = $('<iframe>', {
-		src: this.baseUrl + '/?embed=1&proto=json&spin=1&analytics=0&libraries=1&plugins=1&offline=1&picker=0' + uiAttr + '&lang=' + this.language + localAttr,
+		src: this.baseUrl + '/?embed=1&proto=json&spin=1&analytics=0&libraries=1&plugins=1&picker=0&ui=min' + uiAttr + '&lang=' + this.language,
 	id: 'drawio-iframe-' + id,
 	class: 'DrawioEditorIframe'
 	})
