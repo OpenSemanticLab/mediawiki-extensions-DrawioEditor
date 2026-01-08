@@ -8,6 +8,7 @@ use MediaWiki\MediaWikiServices;
 use Parser;
 use PPFrame;
 use RequestContext;
+use Title;
 
 class DrawioEditor {
 
@@ -184,7 +185,7 @@ class DrawioEditor {
 		$output .= '<div id="drawio-img-box-' . $id . '">';
 
 		/* display edit link */
-		if ( !$this->isReadOnly( $img ) ) {
+		if ( !$this->isReadOnly( $img, $parser ) ) {
 			$output .= '<div align="right">';
 			$output .= '<span class="mw-editdrawio">';
 			$output .= '<span class="mw-editsection-bracket">[</span>';
@@ -264,15 +265,23 @@ class DrawioEditor {
 
 	/**
 	 * @param File|null $img
+	 * @param Parser $parser
 	 * @return bool
 	 */
-	private function isReadOnly( $img ) {
+	private function isReadOnly( $img, $parser ) {
 		$user = RequestContext::getMain()->getUser();
-		$parser = $this->services->getParser();
+		$permissionManager = $this->services->getPermissionManager();
+		$pageRef = $parser->getPage();
+		$title = Title::castFromPageReference( $pageRef );
+		if ( !$title ) {
+			return true;
+		}
 
-		return !$this->config->get( 'EnableUploads' ) ||
-			( !$img && !$this->services->getPermissionManager()->userHasRight( $user, 'upload' ) ) ||
-			( !$img && !$this->services->getPermissionManager()->userHasRight( $user, 'reupload' ) ) ||
-			( $parser->getTitle() ? $parser->getTitle()->isProtected( 'edit' ) : false );
+		$isProtected = $this->services->getRestrictionStore()->isProtected( $title, 'edit' );
+		$uploadsEnabled = $this->config->get( 'EnableUploads' );
+		$canUpload = $permissionManager->userCan( 'upload', $user, $title );
+		$canReupload = $permissionManager->userCan( 'reupload', $user, $title );
+
+		return !$uploadsEnabled || !$canUpload || !$canReupload || $isProtected;
 	}
 }
